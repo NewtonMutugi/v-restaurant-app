@@ -1,0 +1,17 @@
+{
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "app.db",
+      "database": "${workspaceFolder:veninah-server}/app.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "app2.fb",
+      "database": "${workspaceFolder:veninah-server}/instance/app.db"
+    }
+  ]
+}
