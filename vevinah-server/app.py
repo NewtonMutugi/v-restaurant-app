@@ -4,10 +4,12 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from sqlalchemy import MetaData, Table, inspect
 from models import Location, db, Food, User
+import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['GOOGLE_API_KEY'] = 'AIzaSyD-9zgk3YwY8XQYJY2WY5QZ5X5qQZ3YQ7o'
 app.json.compact = False
 
 CORS(app)
@@ -175,6 +177,18 @@ def get_location(id):
         "longitude": location.longitude
     }
     return make_response(jsonify(response_body), 200)
+
+
+@app.route('/distance', methods=['GET'])
+def get_distance():
+    origin = request.args.get('origins')
+    destination = request.args.get('destinations')
+    api_key = request.args.get('key')
+    url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins={}&destinations={}&key={}".format(
+        origin, destination, api_key)
+    response = requests.get(url)
+    print(response.json())
+    return response.json()
 
 
 if __name__ == '__main__':
