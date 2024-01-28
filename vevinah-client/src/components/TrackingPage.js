@@ -3,10 +3,12 @@ import { Star } from 'react-feather';
 import Navbar from './Navbar';
 import '../App.css';
 import HomeFooter from './HomeFooter';
+import { useLocation } from 'react-router-dom';
 
 function TrackingPage() {
-  const estimatedTime = 5;
+  let estimatedTime = 5;
   const [elapsedTime, setElapsedTime] = useState(0);
+  const { state } = useLocation(); // Get order details from props
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,7 +19,7 @@ function TrackingPage() {
   }, []);
 
   const getStepByElapsedTime = () => {
-    const totalSteps = 4;
+    const totalSteps = 3;
     const stepDuration = estimatedTime / totalSteps;
     const currentStep = Math.floor(elapsedTime / stepDuration) + 1;
     return currentStep > totalSteps ? totalSteps : currentStep;
@@ -50,17 +52,21 @@ function TrackingPage() {
 
   return (
     <div>
-        <div>{<Navbar />}</div>
+      <div>{<Navbar />}</div>
       <div className="track-order-container">
         <div className="steps-container">
-          {['Ordered', 'Preparing', 'In Transit', 'Arrived'].map((step, index) => (
-            <div
-              key={index}
-              className={`step ${getStepByElapsedTime() === index + 1 ? 'active' : ''}`}
-            >
-              {step}
-            </div>
-          ))}
+          {['Ordered', 'Preparing', 'In Transit', 'Arrived'].map(
+            (step, index) => (
+              <div
+                key={index}
+                className={`step ${
+                  getStepByElapsedTime() === index + 1 ? 'active' : ''
+                }`}
+              >
+                {step}
+              </div>
+            )
+          )}
         </div>
         <div className="estimate-bar">
           <div
@@ -68,7 +74,12 @@ function TrackingPage() {
             style={{ width: `${(elapsedTime / estimatedTime) * 100}%` }}
           ></div>
         </div>
-        <div className="estimated-time">Estimated Time: {estimatedTime - elapsedTime} minutes</div>
+        <div className="estimated-time">
+          Estimated Time:{' '}
+          {estimatedTime - elapsedTime <= 0
+            ? 'Completed'
+            : estimatedTime - elapsedTime + ' minutes'}{' '}
+        </div>
         {/* Add other tracking page content here */}
 
         {/* Creative form for order status */}
@@ -78,7 +89,12 @@ function TrackingPage() {
           <div className="rating-container">{renderRatingIcons()}</div>
           <form>
             <label htmlFor="status2">What Makes You Feel This Way:</label>
-            <input className='feedback' type="text" id="status2" placeholder="Good Food, Fast delivery etc.." />
+            <input
+              className="feedback"
+              type="text"
+              id="status2"
+              placeholder="Good Food, Fast delivery etc.."
+            />
 
             <button type="submit">Submit</button>
           </form>

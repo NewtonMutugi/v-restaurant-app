@@ -4,19 +4,21 @@ import cashLogo from './images/cash-logo.png';
 import paypalLogo from './images/paypal-logo.png';
 import binanceLogo from './images/binance-logo.png';
 import visaLogo from './images/visa-logo.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import HomeFooter from './HomeFooter';
 
 const PaymentPage = () => {
   const [selectedPayment, setSelectedPayment] = useState('');
   const [locations, setLocations] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://127.0.0.1:5000/locations')
       .then((response) => response.json())
       .then((data) => {
         setLocations(data);
+        console.log(data);
       })
       .catch((error) => console.error('Error:', error));
   }, []);
@@ -37,6 +39,24 @@ const PaymentPage = () => {
       window.location.href = 'https://www.visaonline.com/login/';
     }
     console.log('Payment submitted');
+    alert('Payment submitted');
+
+    const data = new FormData(e.target);
+    const formObject = Object.fromEntries(data.entries());
+    const order = {
+      deliveryAddress: {
+        area: formObject.cityId,
+        street: formObject.street,
+        building: formObject.building,
+        room: formObject.room,
+        notes: formObject.notes,
+      },
+      paymentMethod: formObject.paymentMethod,
+      locations: locations,
+    };
+    // console.log(JSON.stringify(order));
+    // Navigate to tracking page with order details as props
+    navigate('/tracking', { replace: true, state: order });
   };
 
   const handlePaymentChange = (e) => {
@@ -48,75 +68,75 @@ const PaymentPage = () => {
       {<Navbar />}
       <h2>Payment Details</h2>
       <div className="payment-page">
-        <div className="payment-card">
-          <strong>1. Delivery Address</strong>
-          <div className="delivery-address-form">
-            <label htmlFor="area" className="form-label">
-              Area:
-            </label>
+        <form onSubmit={handleSubmit}>
+          <div className="payment-card">
+            <strong>1. Delivery Address</strong>
+            <div className="delivery-address-form">
+              <label htmlFor="area" className="form-label">
+                Area:
+              </label>
 
-            <select id="fi-cityId" name="cityId" className="form-control">
-              <option value="" disabled="">
-                Please select
-              </option>
-              <option value="1027">* SELECT YOUR CITY / AREA BELOW *</option>
-
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
+              <select id="fi-cityId" name="cityId" className="form-control">
+                <option value="" disabled="">
+                  Please select
                 </option>
-              ))}
-            </select>
+                <option value="1027">* SELECT YOUR CITY / AREA BELOW *</option>
 
-            <label htmlFor="street" className="form-label">
-              Street:
-            </label>
-            <input
-              type="text"
-              id="street"
-              name="street"
-              className="form-input"
-              placeholder="Monrovia, UtaliiAve"
-              required
-            />
+                {locations.map((location) => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
 
-            <label htmlFor="building" className="form-label">
-              Building:
-            </label>
-            <input
-              type="text"
-              id="building"
-              name="building"
-              className="form-input"
-              placeholder="GTC, Mirage, KICC, Chancery, UAP"
-              required
-            />
+              <label htmlFor="street" className="form-label">
+                Street:
+              </label>
+              <input
+                type="text"
+                id="street"
+                name="street"
+                className="form-input"
+                placeholder="Monrovia, UtaliiAve"
+                required
+              />
 
-            <label htmlFor="room" className="form-label">
-              Room:
-            </label>
-            <input
-              type="text"
-              id="room"
-              name="room"
-              className="form-input"
-              placeholder="Room No. House No. Office Name"
-              required
-            />
+              <label htmlFor="building" className="form-label">
+                Building:
+              </label>
+              <input
+                type="text"
+                id="building"
+                name="building"
+                className="form-input"
+                placeholder="GTC, Mirage, KICC, Chancery, UAP"
+                required
+              />
 
-            <label htmlFor="notes" className="form-label">
-              Notes:
-            </label>
-            <textarea
-              id="notes"
-              name="notes"
-              className="form-input"
-              placeholder="Anything we should know before entering your property"
-            />
+              <label htmlFor="room" className="form-label">
+                Room:
+              </label>
+              <input
+                type="text"
+                id="room"
+                name="room"
+                className="form-input"
+                placeholder="Room No. House No. Office Name"
+                required
+              />
+
+              <label htmlFor="notes" className="form-label">
+                Notes:
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                className="form-input"
+                placeholder="Anything we should know before entering your property"
+              />
+            </div>
           </div>
-        </div>
-        <div className="payment-container">
-          <form onSubmit={handleSubmit}>
+          <div className="payment-container">
             <div className="payment-card">
               <strong>2. Payment Options</strong>
               <br />
@@ -161,8 +181,8 @@ const PaymentPage = () => {
                 </Link>
               </div>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
       <div>{<HomeFooter />}</div>
     </div>
