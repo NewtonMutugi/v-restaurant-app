@@ -4,11 +4,28 @@ import Navbar from './Navbar';
 import '../App.css';
 import HomeFooter from './HomeFooter';
 import { useLocation } from 'react-router-dom';
+const api_key = process.env.REACT_APP_MAPS_API_KEY;
 
 function TrackingPage() {
-  let estimatedTime = 5;
+  const defaultTime = 20;
+  const [estimatedTime, setEstimatedTime] = useState(5);
   const [elapsedTime, setElapsedTime] = useState(0);
   const { state } = useLocation(); // Get order details from props
+
+  // Calculate estimated time using distance calculated from Google Maps API
+  const url = `http://localhost:5000/distance?destinations=${state.destination.latitude},${state.destination.longitude}&origins=${state.origin.latitude},${state.origin.longitude}&key=${api_key}`;
+
+  // send a GET request to the Distance Matrix API
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      // calculate estimated time in minutes
+      const newEstimatedTime =
+        defaultTime + Math.floor(data.rows[0].elements[0].duration.value / 60);
+      setEstimatedTime(newEstimatedTime);
+    })
+    .catch((error) => console.error('Error:', error));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -19,7 +36,7 @@ function TrackingPage() {
   }, []);
 
   const getStepByElapsedTime = () => {
-    const totalSteps = 3;
+    const totalSteps = 4;
     const stepDuration = estimatedTime / totalSteps;
     const currentStep = Math.floor(elapsedTime / stepDuration) + 1;
     return currentStep > totalSteps ? totalSteps : currentStep;

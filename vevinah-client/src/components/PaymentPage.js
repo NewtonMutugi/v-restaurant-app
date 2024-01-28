@@ -18,7 +18,7 @@ const PaymentPage = () => {
       .then((response) => response.json())
       .then((data) => {
         setLocations(data);
-        console.log(data);
+        // console.log(data);
       })
       .catch((error) => console.error('Error:', error));
   }, []);
@@ -43,6 +43,15 @@ const PaymentPage = () => {
 
     const data = new FormData(e.target);
     const formObject = Object.fromEntries(data.entries());
+    // calculate expected delivery time using distance calculated from Google Maps API
+    const origin = [-1.3063965601181275, 36.85755932273569];
+    // Get destination logituedesfrom locations(array of objects) based on selected location
+    const destination = locations.find((location) => {
+      // eslint-disable-next-line eqeqeq
+      return location.id == parseInt(formObject.cityId);
+    });
+
+    console.log(destination);
     const order = {
       deliveryAddress: {
         area: formObject.cityId,
@@ -52,11 +61,18 @@ const PaymentPage = () => {
         notes: formObject.notes,
       },
       paymentMethod: formObject.paymentMethod,
-      locations: locations,
+      destination: {
+        latitude: destination.latitude,
+        longitude: destination.longitude,
+      },
+      origin: {
+        latitude: origin[0],
+        longitude: origin[1],
+      },
     };
-    // console.log(JSON.stringify(order));
+    console.log(JSON.stringify(order));
     // Navigate to tracking page with order details as props
-    navigate('/tracking', { replace: true, state: order });
+    navigate('/tracking', { replace: false, state: order });
   };
 
   const handlePaymentChange = (e) => {
