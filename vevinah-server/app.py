@@ -9,7 +9,6 @@ import requests
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['GOOGLE_API_KEY'] = 'AIzaSyD-9zgk3YwY8XQYJY2WY5QZ5X5qQZ3YQ7o'
 app.json.compact = False
 
 CORS(app)
