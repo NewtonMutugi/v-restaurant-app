@@ -41,6 +41,12 @@ def dump_locations():
     with engine.connect() as connection:
         trans = connection.begin()  # Begin a transaction
         try:
+            # Clear locations table
+            query = text("""
+            DELETE FROM locations;
+            """)
+            connection.execute(query)
+            # Insert locations
             for location in locations:
                 query = text("""
                 INSERT INTO locations (name, latitude, longitude, delivery_fee)
