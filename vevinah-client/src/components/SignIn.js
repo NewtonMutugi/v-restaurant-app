@@ -1,88 +1,95 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Carousel1 from '../assets/dineinphoto.jpg';
 
 const SignIn = () => {
   const [userCredentials, setUserCredentials] = useState({
-    username: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
-  const navigate = useNavigate();
+  const image = [Carousel1];
 
   useEffect(() => {
     sessionStorage.clear();
   }, []);
+  const navigate = useNavigate();
 
   const proceedLogin = (e) => {
     e.preventDefault();
-
     if (validate()) {
-      fetch("http://localhost:5000/user/" + userCredentials.username)  // Update the port to 5000
-      .then((res) => res.json())
-      .then((resp) => {
-        if (Object.keys(resp).length === 0) {
-          toast.error("Please enter a valid username");
-        } else {
-          if (resp.password === userCredentials.password) {
-            toast.success("Success");
-            sessionStorage.setItem("username", userCredentials.username);
-            sessionStorage.setItem("userrole", resp.role);
-            navigate("/menu");
-          } else {
-            toast.error("Please enter valid credentials");
-          }
-        }
+      fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(userCredentials),
       })
+        .then((res) => res.json()) // Add this line
+        .then((data) => {
+          if (data.access_token) {
+            toast.success('Login successfully.');
+            localStorage.setItem('access_token', data.access_token);
+            console.log('passed' + userCredentials);
+            navigate('/payment', { replace: true });
+          } else {
+            toast.error('Login failed.');
+            console.log(userCredentials);
+          }
+        })
         .catch((err) => {
-          toast.error("Login failed due to: " + err.message);
+          toast.error('Failed: ' + err.message);
+          console.log(err);
+          console.log(userCredentials);
+          alert('Invalid');
         });
     }
   };
 
   const validate = () => {
-    const { username, password } = userCredentials;
+    const { email, password } = userCredentials;
     let result = true;
 
-    if (!username || username.trim() === "") {
+    if (!email || email.trim() === '') {
       result = false;
-      toast.warning("Please enter a username");
+      toast.warning('Please enter a email');
     }
 
-    if (!password || password.trim() === "") {
+    if (!password || password.trim() === '') {
       result = false;
-      toast.warning("Please enter a password");
+      toast.warning('Please enter a password');
     }
 
     return result;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserCredentials((prevCredentials) => ({
-      ...prevCredentials,
-      [name]: value,
-    }));
+  const handleChange = (event) => {
+    setUserCredentials({
+      ...userCredentials,
+      [event.target.name]: event.target.value,
+    });
   };
 
   return (
     <div className="row">
-      <div className="offset-lg-3 col-lg-6" style={{ marginTop: "100px" }}>
+      <div className="offset-lg-3 col-lg-6" style={{ marginTop: '100px' }}>
+        <img src={image} alt="menu-image" className="background-image" />
         <form onSubmit={proceedLogin} className="container">
-          <div className="card">
-            <div className="card-header">
-              <h2>User Login</h2>
+          <div className="login-card">
+            <div className="login-header">
+              <h1>Login</h1>
             </div>
-            <div className="card-body">
+            <div className="form-dialogue" style={{ borderRadius: '0' }}>
               <div className="form-group">
                 <label>
-                  User Name <span className="errmsg">*</span>
+                  Email <span className="errmsg">*</span>
                 </label>
                 <input
                   type="text"
-                  value={userCredentials.username}
+                  value={userCredentials.email}
                   onChange={handleChange}
-                  name="username"
+                  name="email"
                   className="form-control"
                 />
               </div>
@@ -99,13 +106,12 @@ const SignIn = () => {
                 />
               </div>
             </div>
-            <div className="card-footer">
-              <Link to="/payment" className="btn btn-primary">
+            <div className="login-footer" style={{ marginTop: '20%' }}>
+              <button type="submit" className="continue-shopping">
                 Login
-              </ Link>{" "}
-              |{" "}
-              <Link className="btn btn-success" to={"/sign_up"}>
-                New User
+              </button>
+              <Link to="/sign_up" className="">
+                Sign Up
               </Link>
             </div>
           </div>

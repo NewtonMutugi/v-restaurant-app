@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import './ContactUs.css';
 import Navbar from './Navbar';
-import HomeFooter from './HomeFooter';
-
-
+import Footer from './Footer';
 
 const ContactUs = () => {
   const [email, setEmail] = useState('');
@@ -30,13 +28,10 @@ const ContactUs = () => {
 
   return (
     <div>
-    <div>{<Navbar />}</div>
+      <Navbar />
       <div className="contact-us-container">
-        <div className="photo-section">
-          <img src="/images/contactanos-2.jpg" alt="Contact" />
-        </div>
         <div className="form-section">
-          <h1>CONTACT US</h1>
+          <h3>CONTACT US</h3>
           <p className="form-statement">PROVIDE YOUR EMAIL TO CONTACT US:</p>
           <form onSubmit={handleSubmit}>
             <input
@@ -59,8 +54,8 @@ const ContactUs = () => {
           {successMessage && <p className="success-message">{successMessage}</p>}
         </div>
       </div>
-      <div>{<HomeFooter />}</div>
-    </div>  
+      <Footer />
+      </div> 
   );
 };
 

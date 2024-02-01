@@ -1,36 +1,39 @@
 import React from 'react';
 import './AboutUs.css';
 import Navbar from './Navbar';
-import HomeFooter from './HomeFooter';
-// import Footer from './Footer';
+import Footer from './Footer';
+import screenLeft from '../assets/food-about.jpg'
+import screenRight from '../assets/chef-about.jpg'
 
 const AboutUs = () => {
+  const image = [screenLeft];
+  const image1 = [screenRight];
+
     return (
     <div>
-      <div>{<Navbar />}</div>
-        <div className="about-us-container">
-          <div className="top-section">
+        <Navbar />
+      <div className="about-us-container">
+          <div className="left-section">
             <div className="left-photo">
-          <img src="/images/935c701b-c026-4c74-a091-c132da2d9749.jpeg" alt="About Us" />
+            <img src={image} alt='about-image' />
+            </div>
           </div>
-          <div className="right-content">
+          <div className="middle-content">
+            <h2>ABOUT US</h2>
             <p>
-              Nestled in the heart of the city, our restaurant is a culinary haven for those seeking a genuine taste of tradition. Our chefs skillfully craft each dish with a commitment to authenticity...
+              Nestled in the heart of the city, our restaurant is a culinary haven for those seeking a genuine taste of tradition. 
+              <br />
+              <br />
+              Our chefs skillfully craft each dish with a commitment to authenticity. From the warm and inviting ambiance to the rich aromas wafting from the kitchen, every element reflects our dedication to providing a truly traditional dining experience. 
             </p>
           </div>
-        </div>
-        <div className="bottom-section">
-          <div className="right-content">
-            <p>
-              From the warm and inviting ambiance to the rich aromas wafting from the kitchen, every element reflects our dedication to providing a truly traditional dining experience. Explore a menu that showcases the diverse flavors of our cultural heritage...
-          </p>
-        </div>
-          <div className="right-photo">
-          <img src="/images/pngtree-african-american-chef-expertly-grilling-meat-on-bbq-animated-representation-of-image_13895979.png" alt="About Us" />
+          <div className="right-section">
+              <div className="right-photo">
+              <img src={image1} alt='about-image' />
+              </div>
           </div>
-        </div>
-      <div>{<HomeFooter />}</div>
-    </div>
+      </div>
+        <Footer />
     </div>
   );
 };

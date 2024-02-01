@@ -1,7 +1,7 @@
 import React from "react";
 // import clientImage from "../assets/logo192.png";
 import reviewer1 from "../assets/reviewer1.jpg"
-// import reviewer2 from "../assets/reviewer2.jpg"
+import reviewer2 from "../assets/reviewer2.jpg"
 import reviewer3 from "../assets/reviewer3.jpg"
 import reviewer4 from "../assets/reviewer4.jpg"
 
@@ -21,7 +21,7 @@ const ReviewCard = ({ customerReview}) => {
           </div>
         </div>
       </div>
-      <p className="review-content">{content}</p>
+      <p style={{color:"black"}} className="review-content">{content}</p>
     </div>
     
 
@@ -48,13 +48,19 @@ const ReviewSection = () => {
     rating: 4,
     content: "A hidden gem! Highly recommend!",
   },
+  {
+    image: reviewer2,
+    name: "John Doe",
+    rating: 4,
+    content: "Exquisite food and such a lovely space. Will be going again :)",
+  },
  
 ];
 
   return (
    <div className="review-cards">
    {customerReviews.map((review, index) => (
-     <ReviewCard key={index} customerReview={review} />
+     <ReviewCard style={{color:"black"}} key={index} customerReview={review} />
    ))}
  </div>
 

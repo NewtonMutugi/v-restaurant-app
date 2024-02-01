@@ -1,14 +1,15 @@
-import Carousel1 from '../assets/Dishes-of-Kenyan-cuisine.jpeg'
-import Carousel2 from '../assets/image 1.png'
-import Carousel3 from '../assets/kenyan-foods.jpeg'
-import logo from '../assets/vevinah-logo.png'
+import Carousel1 from '../assets/slide-image1.jpg'
+import Carousel2 from '../assets/slide-image3.jpg'
+import Carousel3 from '../assets/slide-image4.jpg'
+import Carousel4 from '../assets/slide-image2.jpg'
+import logo from '../assets/chai-vevinah-logo.png'
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 
 
 
 const ImageCarousel = () => {
-  const images = [Carousel1, Carousel2, Carousel3];
+  const images = [Carousel1, Carousel2, Carousel3, Carousel4];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
