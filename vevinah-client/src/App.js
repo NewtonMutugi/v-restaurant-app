@@ -42,7 +42,8 @@ function App() {
   };
 
   function PrivateRoute() {
-    return isloggedIn ? <Outlet /> : <Navigate to="/sign_in" replace />;
+    const token = localStorage.getItem('access_token');
+    return token ? <Outlet /> : <Navigate to="/sign_in" replace />;
   }
 
   return (

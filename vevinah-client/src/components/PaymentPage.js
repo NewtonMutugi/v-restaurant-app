@@ -302,11 +302,9 @@ const PaymentPage = () => {
                 <button type="submit" className="continue-shopping">
                   Pay Now
                 </button>
-                {/* <Link to={'/tracking'} state={globalOrder}> */}
-                <button className="continue-shopping" type="submit">
-                  Pay on Delivery
-                </button>
-                {/* </Link> */}
+                <Link to={'/tracking'} state={globalOrder}>
+                  <button className="continue-shopping">Pay on Delivery</button>
+                </Link>
               </div>
             </div>
           </div>
