@@ -206,7 +206,7 @@ api.add_resource(ReviewResource, '/review')
 # Address
 
 
-class Address(Resource):
+class AddressResource(Resource):
     @jwt_required()
     def post(self):
         data = request.get_json()
@@ -247,12 +247,12 @@ class Address(Resource):
         return make_response(jsonify(response_body), 201)
 
 
-api.add_resource(Address, '/address')
+api.add_resource(AddressResource, '/address')
 
 # Menu
 
 
-class Dishes(Resource):
+class DishesResource(Resource):
     def get(self):
         foods = []
         for food in Food.query.all():
@@ -271,12 +271,12 @@ class Dishes(Resource):
         return response
 
 
-api.add_resource(Dishes, '/dishes')
+api.add_resource(DishesResource, '/dishes')
 
 # Locations
 
 
-class Loction(Resource):
+class LoctionResource(Resource):
     def get(self):
         locations = []
         for location in Location.query.all():
@@ -295,8 +295,22 @@ class Loction(Resource):
         return response
 
 
-api.add_resource(Loction, '/locations')
+api.add_resource(LoctionResource, '/locations')
 
+
+class DistanceResource(Resource):
+    def get(self):
+        origin = request.args.get('origins')
+        destination = request.args.get('destinations')
+        api_key = request.args.get('key')
+        url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins={}&destinations={}&key={}".format(
+            origin, destination, api_key)
+        response = requests.get(url)
+        print(response.json())
+        return response.json()
+
+
+api.add_resource(DistanceResource, '/distance')
 
 if __name__ == '__main__':
     # Modify the database to have pasw

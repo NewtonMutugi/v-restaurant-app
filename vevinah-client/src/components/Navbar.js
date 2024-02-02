@@ -9,7 +9,7 @@ function Navbar() {
     savedCart ? JSON.parse(savedCart) : []
   );
   useEffect(() => {
-    console.log(savedCart);
+    // console.log(savedCart);
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
       // console.log(cart);

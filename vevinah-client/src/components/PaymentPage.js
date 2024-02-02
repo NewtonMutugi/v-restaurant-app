@@ -16,6 +16,7 @@ const PaymentPage = () => {
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [globalOrder, setGlobalOrder] = useState({});
 
   useEffect(() => {
     fetch('http://127.0.0.1:5000/locations')
@@ -111,6 +112,7 @@ const PaymentPage = () => {
     };
     console.log(JSON.stringify(order));
     // Navigate to tracking page with order details as props
+    setGlobalOrder(order);
     navigate('/tracking', { replace: false, state: order });
   };
 
@@ -187,7 +189,6 @@ const PaymentPage = () => {
         <h2>Payment Details</h2>
         <form onSubmit={handleSubmit}>
           <div className="payment-container">
-            c
             <div className="card-payment1">
               <strong>Payment Options</strong>
               <br />
@@ -301,9 +302,11 @@ const PaymentPage = () => {
                 <button type="submit" className="continue-shopping">
                   Pay Now
                 </button>
-                <Link to={'/tracking'}>
-                  <button className="continue-shopping">Pay on Delivery</button>
-                </Link>
+                {/* <Link to={'/tracking'} state={globalOrder}> */}
+                <button className="continue-shopping" type="submit">
+                  Pay on Delivery
+                </button>
+                {/* </Link> */}
               </div>
             </div>
           </div>
