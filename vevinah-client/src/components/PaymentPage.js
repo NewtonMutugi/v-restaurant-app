@@ -17,6 +17,7 @@ const PaymentPage = () => {
   const [grandTotal, setGrandTotal] = useState(0);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [globalOrder, setGlobalOrder] = useState({});
+  const [paymentType, setPaymentType] = useState('');
 
   useEffect(() => {
     fetch('http://127.0.0.1:5000/locations')
@@ -109,11 +110,21 @@ const PaymentPage = () => {
         latitude: origin[0],
         longitude: origin[1],
       },
+      TotalPrice: grandTotal,
     };
     console.log(JSON.stringify(order));
-    // Navigate to tracking page with order details as props
-    setGlobalOrder(order);
-    navigate('/tracking', { replace: false, state: order });
+    console.log('paymentType; ' + paymentType);
+
+    // Navigate to tdifferent page based on payment method
+    if (paymentType === 'payNow') {
+      localStorage.setItem('order', JSON.stringify(order));
+      setGlobalOrder(order);
+      navigate('/mpesa_payment', { replace: false, state: order });
+    } else if (paymentType === 'payOnDelivery') {
+      localStorage.setItem('order', JSON.stringify(order));
+      setGlobalOrder(order);
+      navigate('/tracking', { replace: false, state: order });
+    }
   };
 
   // TBC
@@ -189,7 +200,10 @@ const PaymentPage = () => {
         <h2>Payment Details</h2>
         <form onSubmit={handleSubmit}>
           <div className="payment-container">
-            <div className="card-payment1">
+            <div
+              className="card-paymenton>
+          t1"
+            >
               <strong>Payment Options</strong>
               <br />
               <div className="payment-options">
@@ -256,7 +270,7 @@ const PaymentPage = () => {
                 />
 
                 <label htmlFor="building" className="form-label">
-                  Building:
+                  Building
                 </label>
                 <input
                   type="text"
@@ -299,12 +313,25 @@ const PaymentPage = () => {
               <p>Total: Ksh. {grandTotal}</p>
               <hr />
               <div className="buttons-container">
-                <button type="submit" className="continue-shopping">
+                <button
+                  type="submit"
+                  className="continue-shopping"
+                  name="paymentType"
+                  value="payNow"
+                  onClick={() => setPaymentType('payNow')}
+                >
                   Pay Now
                 </button>
-                <Link to={'/tracking'} state={globalOrder}>
-                  <button className="continue-shopping">Pay on Delivery</button>
-                </Link>
+
+                <button
+                  className="continue-shopping"
+                  type="submit"
+                  name="paymentType"
+                  value="payOnDelivery"
+                  onClick={() => setPaymentType('payOnDelivery')}
+                >
+                  Pay on Delivery
+                </button>
               </div>
             </div>
           </div>

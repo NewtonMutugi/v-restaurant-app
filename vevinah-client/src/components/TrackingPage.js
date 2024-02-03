@@ -3,7 +3,7 @@ import { Star } from 'react-feather';
 import '../App.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import { useLocation } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 const api_key = process.env.REACT_APP_MAPS_API_KEY;
 
 function TrackingPage() {
@@ -11,8 +11,9 @@ function TrackingPage() {
   const [estimatedTime, setEstimatedTime] = useState(defaultTime);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [feedback, setFeedback] = useState();
-  const { state } = useLocation(); // Get order details from props
+  const state = JSON.parse(localStorage.getItem('order')); // Get order details from props
   console.log('state: ' + JSON.stringify(state));
+
   // TBC
   const user = {
     email: 'user@example.com',

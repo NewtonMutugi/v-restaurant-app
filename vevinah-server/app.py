@@ -25,17 +25,19 @@ with app.app_context():
     # Check if the 'foods' table exists
     db.create_all()
     inspector = inspect(db.engine)
-        # print all table names
+    # print all table names
     if 'foods' in inspector.get_table_names():
         print(inspector.get_table_names())
 
 
-#Mpesa
-consumer_key='7GSlEmZiocYKga9acUBDyIYiuJqOvZvHd6XGzbcVZadPm93f'
-consumer_secret='Vh2mvQS4GKyo6seUtpAApN1plTwMDTeqyGZNBEtESYH05sBfRMSddn5vnlJ4zifA'
-base_url='https://1115-105-161-25-71.ngrok-free.app'
+# Mpesa
+consumer_key = '7GSlEmZiocYKga9acUBDyIYiuJqOvZvHd6XGzbcVZadPm93f'
+consumer_secret = 'Vh2mvQS4GKyo6seUtpAApN1plTwMDTeqyGZNBEtESYH05sBfRMSddn5vnlJ4zifA'
+base_url = 'https://1115-105-161-25-71.ngrok-free.app'
 
-#Dishes API
+# Dishes API
+
+
 @app.route('/dishes', methods=['GET'])
 def get_foods():
     foods = []
@@ -56,8 +58,7 @@ def get_foods():
     return response
 
 
-
-#register users
+# register users
 @app.route('/users', methods=['POST'])
 def register_user():
     data = request.get_json()
@@ -93,6 +94,8 @@ def register_user():
     return make_response(jsonify(response_body), 201)
 
 # View all users
+
+
 @app.route('/users', methods=['GET'])
 def get_all_users():
     users = User.query.all()
@@ -114,7 +117,9 @@ def get_all_users():
     else:
         return make_response(jsonify({"error": "No users found"}), 404)
 
-#collect reviews
+# collect reviews
+
+
 @app.route('/reviews', methods=['POST'])
 def submit_review():
     data = request.get_json()
@@ -147,11 +152,14 @@ def submit_review():
     return make_response(jsonify(response_body), 201)
 
 # Collect address
+
+
 @app.route('/address', methods=['POST'])
 def add_address():
     data = request.get_json()
 
-    required_fields = ['user_email', 'city', 'area', 'street', 'building', 'room']
+    required_fields = ['user_email', 'city',
+                       'area', 'street', 'building', 'room']
     if not all(field in data for field in required_fields):
         return make_response(jsonify({"error": "Missing required fields"}), 400)
 
@@ -186,6 +194,8 @@ def add_address():
     return make_response(jsonify(response_body), 201)
 
 # View addresses for a user
+
+
 @app.route('/addresses/<user_email>', methods=['GET'])
 def get_addresses_by_user(user_email):
     user = User.query.filter_by(email=user_email).first()
@@ -213,82 +223,86 @@ def get_addresses_by_user(user_email):
     else:
         return make_response(jsonify({"error": "User not found"}), 404)
 
+
 @app.route('/payment')
 def post():
 
-        # phone_number = request.json['phone']
-        # amount = request.json['amount']
-        parser = reqparse.RequestParser()
-        parser.add_argument('phone', type=str, required = True)
-        parser.add_argument('amount', type=str, required=True)
-        args = parser.parse_args()
+    # phone_number = request.json['phone']
+    # amount = request.json['amount']
+    parser = reqparse.RequestParser()
+    parser.add_argument('phone', type=str, required=True)
+    parser.add_argument('amount', type=str, required=True)
+    args = parser.parse_args()
 
-        phone_number = args['phone']
-        amount = args['amount']
+    phone_number = args['phone']
+    amount = args['amount']
 
-        consumer_key ="AAa4RjX5YgWolpQsX8b1E6MAZDHH1zRXpfXBWnjfGSWImQEU"
-        consumer_secret = "pPAPZ4X3uvGyfeFpEoziaxR43lRih7PxnHV2FA62sCOgmWwKAnZ5S6sdIlhRwXlf"
-        api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    consumer_key = "AAa4RjX5YgWolpQsX8b1E6MAZDHH1zRXpfXBWnjfGSWImQEU"
+    consumer_secret = "pPAPZ4X3uvGyfeFpEoziaxR43lRih7PxnHV2FA62sCOgmWwKAnZ5S6sdIlhRwXlf"
+    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
 
-        r = requests.get(api_url, auth=HTTPBasicAuth(consumer_key, consumer_secret))
+    r = requests.get(api_url, auth=HTTPBasicAuth(
+        consumer_key, consumer_secret))
 
-        data = r.json()
-        access_token = "Bearer " + data['access_token']
-        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-        passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
-        bussiness_shortcode = '174379'
-        data_to_encode = bussiness_shortcode + passkey + timestamp
-        encoded_data = base64.b64encode(data_to_encode.encode())
-        password = encoded_data.decode('utf-8')
+    data = r.json()
+    access_token = "Bearer " + data['access_token']
+    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
+    bussiness_shortcode = '174379'
+    data_to_encode = bussiness_shortcode + passkey + timestamp
+    encoded_data = base64.b64encode(data_to_encode.encode())
+    password = encoded_data.decode('utf-8')
 
-        request = {
-            "BusinessShortCode": bussiness_shortcode,
-            "Password": password,
-            "Timestamp": timestamp, # timestamp format: 20190317202903 yyyyMMhhmmss
-            "TransactionType": "CustomerPayBillOnline",
-            "Amount": amount,
-            "PartyA": f"254{phone_number[1:]}",
-            "PartyB": bussiness_shortcode,
-            "PhoneNumber": f"254{phone_number[1:]}",
-            "CallBackURL": "https://mydomain.com/pat",
-            "AccountReference": "Client",
-            "TransactionDesc": "Client Paid"
+    request = {
+        "BusinessShortCode": bussiness_shortcode,
+        "Password": password,
+        "Timestamp": timestamp,  # timestamp format: 20190317202903 yyyyMMhhmmss
+        "TransactionType": "CustomerPayBillOnline",
+        "Amount": amount,
+        "PartyA": f"254{phone_number[1:]}",
+        "PartyB": bussiness_shortcode,
+        "PhoneNumber": f"254{phone_number[1:]}",
+        "CallBackURL": "https://mydomain.com/pat",
+        "AccountReference": "Client",
+        "TransactionDesc": "Client Paid"
+    }
+
+    stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+
+    headers = {"Authorization": access_token,
+               "Content-Type": "application/json"}
+
+    # STK push
+
+    response = requests.post(stk_url, json=request, headers=headers)
+
+    if response.status_code > 299:
+        mpesa_response = {
+            'message': 'Failed'
         }
+        final_response = make_response(
+            jsonify(mpesa_response)
+        )
 
-        stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
+        return final_response
+    else:
+        message = {
+            'message': 'Successful'
+        }
+        response = make_response(
+            jsonify(message)
+        )
 
-        headers = {"Authorization": access_token, "Content-Type": "application/json"}
+        new_data = Payment(
+            number=phone_number,
+            amount=amount
+        )
 
-        # STK push
+        db.session.add(new_data)
+        db.session.commit()
 
-        response = requests.post(stk_url,json=request,headers=headers)
+        return response
 
-        if response.status_code > 299:
-            mpesa_response = {
-                'message':'Failed'
-            }
-            final_response = make_response(
-                jsonify(mpesa_response)
-            )
-
-            return final_response
-        else:
-            message = {
-                'message':'Successful'
-            }
-            response = make_response(
-                jsonify(message)
-            )
-
-            new_data = Payment(
-                number = phone_number,
-                amount = amount
-            )
-
-            db.session.add(new_data)
-            db.session.commit()
-
-            return response
 
 @app.route('/locations', methods=['GET'])
 def get_locations():
@@ -334,6 +348,7 @@ def get_distance():
     response = requests.get(url)
     print(response.json())
     return response.json()
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
