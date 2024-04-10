@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Carousel1 from '../assets/dineinphoto.jpg';
 
+const backend_url = 'http://127.0.0.1:5000';
+
 const SignIn = () => {
   const [userCredentials, setUserCredentials] = useState({
     email: '',
@@ -10,6 +12,7 @@ const SignIn = () => {
   });
 
   const image = [Carousel1];
+  // const [userEmail, setUserEmail] = useState(""); // state to store user email
 
   useEffect(() => {
     sessionStorage.clear();
@@ -18,15 +21,16 @@ const SignIn = () => {
 
   const proceedLogin = (e) => {
     e.preventDefault();
+
     if (validate()) {
-      fetch('http://localhost:5000/login', {
+      fetch(`${backend_url}/login`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
         },
         body: JSON.stringify(userCredentials),
       })
-        .then((res) => res.json()) // Add this line
+        .then((res) => res.json())
         .then((data) => {
           if (data.access_token) {
             toast.success('Login successfully.');
@@ -53,12 +57,12 @@ const SignIn = () => {
 
     if (!email || email.trim() === '') {
       result = false;
-      toast.warning('Please enter a email');
+      toast.warning('Please enter your email');
     }
 
     if (!password || password.trim() === '') {
       result = false;
-      toast.warning('Please enter a password');
+      toast.warning('Please enter your password');
     }
 
     return result;
@@ -74,13 +78,11 @@ const SignIn = () => {
   return (
     <div className="row">
       <div className="offset-lg-3 col-lg-6" style={{ marginTop: '100px' }}>
-        <img src={image} alt="menu-image" className="background-image" />
+        <img src={image} alt="menu" className="background-image" />
         <form onSubmit={proceedLogin} className="container">
           <div className="login-card">
-            <div className="login-header">
-              <h1>Login</h1>
-            </div>
-            <div className="form-dialogue" style={{ borderRadius: '0' }}>
+            <div className="login-form-dialogue">
+              <h1 className="card-header">Login</h1>
               <div className="form-group">
                 <label>
                   Email <span className="errmsg">*</span>
@@ -106,12 +108,13 @@ const SignIn = () => {
                 />
               </div>
             </div>
-            <div className="login-footer" style={{ marginTop: '20%' }}>
+            <div className="login-footer">
               <button type="submit" className="continue-shopping">
                 Login
               </button>
-              <Link to="/sign_up" className="">
-                Sign Up
+              or
+              <Link to="/sign_up">
+                <button className="continue-shopping">Sign Up</button>
               </Link>
             </div>
           </div>

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import ItemActions from './ItemActions';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import ItemActions from "./ItemActions";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 
 function Cart() {
-  const savedCart = localStorage.getItem('cart');
+  const savedCart = localStorage.getItem("cart");
   const [subtotal, setSubtotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [cartItems, setCartItems] = useState(
@@ -23,7 +23,7 @@ function Cart() {
   // }, [cart]);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
+    localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
   useEffect(() => {
@@ -45,31 +45,29 @@ function Cart() {
   }, [cartItems]);
 
   const navigate = useNavigate();
-  var isLoggedIn = false;
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    isLoggedIn = true;
-  }
+
   function handlePayNow() {
+    const isLoggedIn = true;
+
     if (isLoggedIn) {
-      navigate('/payment');
+      navigate("/payment");
     } else {
-      navigate('/sign_in');
+      navigate("/sign_up");
     }
   }
 
   return (
-    <div>
+  <div>
       <Navbar />
       <div className="cart-page">
-        <h2>MY CART</h2>
         <div className="cart-container">
+        <h2>MY CART</h2>
           {cartItems.length === 0 ? (
             <p>Your cart is empty.</p>
           ) : (
             cartItems.map((item) => (
               <div key={item.id} className="cart-item">
-                <div className="item-Sign in and Payimage">
+                <div className="item-image">
                   <img
                     src={item.image}
                     alt={item.name}
@@ -107,17 +105,16 @@ function Cart() {
           <div className="summary-note">
             * Delivery charges will be applicable based on your chosen address
           </div>
-        </div>
-
-        <div className="payment-options">
+          <div className="payment-options">
           <Link to="/menu">
             <button className="continue-shopping">Continue Shopping</button>
           </Link>
           <Link to="/sign_up">
             <button className="continue-shopping" onClick={handlePayNow}>
-              {isLoggedIn ? 'Sign in' : 'Pay now'}
+              Sign in and Pay
             </button>
           </Link>
+        </div>
         </div>
       </div>
       <Footer />

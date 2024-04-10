@@ -91,8 +91,6 @@ class Address(db.Model):
     notes = db.Column(db.String, nullable=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # location_id = db.Column(db.Integer, db.ForeignKey(
-    #     "locations.id"), nullable=False)
 
 
 class Location(db.Model):
@@ -103,9 +101,7 @@ class Location(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     delivery_fee = db.Column(db.Float, nullable=False)
-
     orders = db.relationship("Order")
-    # addresses = db.relationship("Address")
 
 
 class Reservation(db.Model):
@@ -116,3 +112,12 @@ class Reservation(db.Model):
     guests_no = db.Column(db.Integer, nullable=False)
     notes = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+
+class Payment(db.Model):
+    __tablename__ = 'payments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.String, nullable=False)
+    amount = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

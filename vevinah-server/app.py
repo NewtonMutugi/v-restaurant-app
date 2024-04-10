@@ -2,17 +2,28 @@ from flask import Flask, make_response, jsonify, request, json
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import Address, db, Food, User, Review, Location
+from models import Address, Payment, db, Food, User, Review, Location
 from requests.auth import HTTPBasicAuth
 from flask_restful import Api, Resource, reqparse
 import requests
 import base64
 from datetime import datetime
 from sqlalchemy import inspect
+from flask_mail import Mail, Message
+from flask_mail import Message
+import os
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'lactorjm3@gmail.com'
+app.config['MAIL_PASSWORD'] = 'zejc ynzq cbkv nupc'
+app.config['MAIL_DEFAULT_SENDER'] = 'lactorjm3@gmail.com'
 app.json.compact = False
 
 CORS(app)
@@ -20,6 +31,9 @@ CORS(app)
 migrate = Migrate(app, db)
 
 db.init_app(app)
+
+
+mail = Mail(app)
 
 with app.app_context():
     # Check if the 'foods' table exists
@@ -57,9 +71,10 @@ def get_foods():
     )
     return response
 
-
 # register users
-@app.route('/users', methods=['POST'])
+
+
+@app.route('/user', methods=['POST'])
 def register_user():
     data = request.get_json()
 
@@ -224,11 +239,17 @@ def get_addresses_by_user(user_email):
         return make_response(jsonify({"error": "User not found"}), 404)
 
 
-@app.route('/payment')
+@app.route('/payment', methods=['POST', 'OPTIONS'])
 def post():
+    if request.method == 'OPTIONS':
+        # Pre-flight request
+        response = make_response('', 200)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return response
 
-    # phone_number = request.json['phone']
-    # amount = request.json['amount']
+    # The rest of your payment processing logic here
     parser = reqparse.RequestParser()
     parser.add_argument('phone', type=str, required=True)
     parser.add_argument('amount', type=str, required=True)
@@ -246,17 +267,17 @@ def post():
 
     data = r.json()
     access_token = "Bearer " + data['access_token']
-    timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
     passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
     bussiness_shortcode = '174379'
     data_to_encode = bussiness_shortcode + passkey + timestamp
     encoded_data = base64.b64encode(data_to_encode.encode())
     password = encoded_data.decode('utf-8')
 
-    request = {
+    request_payload = {
         "BusinessShortCode": bussiness_shortcode,
         "Password": password,
-        "Timestamp": timestamp,  # timestamp format: 20190317202903 yyyyMMhhmmss
+        "Timestamp": timestamp,
         "TransactionType": "CustomerPayBillOnline",
         "Amount": amount,
         "PartyA": f"254{phone_number[1:]}",
@@ -268,40 +289,113 @@ def post():
     }
 
     stk_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-
     headers = {"Authorization": access_token,
                "Content-Type": "application/json"}
 
-    # STK push
-
-    response = requests.post(stk_url, json=request, headers=headers)
+    response = requests.post(stk_url, json=request_payload, headers=headers)
 
     if response.status_code > 299:
-        mpesa_response = {
-            'message': 'Failed'
-        }
-        final_response = make_response(
-            jsonify(mpesa_response)
-        )
-
+        mpesa_response = {'message': 'Failed'}
+        final_response = make_response(jsonify(mpesa_response))
         return final_response
     else:
-        message = {
-            'message': 'Successful'
-        }
-        response = make_response(
-            jsonify(message)
-        )
+        message = {'message': 'Successful'}
+        response = make_response(jsonify(message))
 
-        new_data = Payment(
-            number=phone_number,
-            amount=amount
-        )
-
+        # Assuming you have a 'Payment' model, you can add the payment data to the database here
+        new_data = Payment(number=phone_number, amount=amount)
         db.session.add(new_data)
         db.session.commit()
 
         return response
+
+
+@app.route('/send_confirmation', methods=['POST'])
+def send_confirmation():
+    print("Attempting network connection...")
+    data = request.get_json()
+
+    # data
+    email = data.get('email')
+    numberOfGuests = data.get('numberOfGuests')
+    tableNumber = data.get('tableNumber')
+
+    # email
+    subject = 'Reservation Confirmation - Chai Vevinah'
+
+    # image
+    logo_filename = 'chai-vevinah-logo.png'
+    logo_path = os.path.join(app.root_path, 'asset', logo_filename)
+    logo_url = f'cid:{logo_filename}'
+    logo_data = base64.b64encode(open(logo_path, 'rb').read()).decode('utf-8')
+    print(f'Logo Path: {logo_path}')
+
+    # email body
+    body = f"""
+    <html>
+        <head>
+            <style>
+                body {{
+                    font-family: 'Arial', sans-serif;
+                    background-color: #f4f4f4;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 600px;
+                    margin: 20px auto;
+                    padding: 20px;
+                    background-color: #fff;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                }}
+                h1 {{
+                    color: #333;
+                }}
+                p {{
+                    color: #555;
+                }}
+                .logo {{
+                    text-align: center;
+                    margin-bottom: 20px;
+                }}
+                .footer {{
+                    margin-top: 20px;
+                    padding-top: 10px;
+                    border-top: 1px solid #ddd;
+                    text-align: center;
+                    color: #777;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <img src="data:image/png;base64,{{ logo_data }}" alt="Chai Vevinah Logo" style="max-width: 100%; height: auto;">
+                </div>
+                <h1>Chai Vevinah Reservation Confirmation</h1>
+                <p>Thank you for choosing Chai Vevinah. Your reservation details are confirmed:</p>
+                <ul>
+                    <li><strong>Number of Guests:</strong> {numberOfGuests}</li>
+                    <li><strong>Table Number:</strong> {tableNumber}</li>
+                </ul>
+                <p>We look forward to serving you. If you have any questions or need further assistance, feel free to contact us.</p>
+                <div class="footer">
+                    <p>Chai Vevinah | Administration</p>
+                </div>
+            </div>
+        </body>
+    </html>
+    """
+
+    # Send
+    try:
+        msg = Message(subject, recipients=[email], html=body)
+        msg.sender = 'lactorjm3@gmail.com'  # sender
+        mail.send(msg)
+        return jsonify({'success': True, 'message': 'Email sent successfully'})
+    except Exception as e:
+        print(f'Error: {str(e)}')
+        return jsonify({'success': False, 'message': f'Error: {str(e)}'})
 
 
 @app.route('/locations', methods=['GET'])

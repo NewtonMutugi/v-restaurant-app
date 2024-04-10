@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
+const backend_url = 'https://127.0.0.1:5000';
 
 const DineInReservation = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -27,7 +30,7 @@ const DineInReservation = () => {
 
   const handleBookNow = async () => {
     try {
-      const response = await fetch('http://localhost:5000/send_confirmation', {
+      const response = await fetch(backend_url + '/send_confirmation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,6 +56,7 @@ const DineInReservation = () => {
 
   return (
     <div>
+      <Navbar />
       <div className="reservation-form">
         <h1>Reservation</h1>
         <DatePicker selected={selectedDate} onChange={handleDateChange} />
@@ -70,9 +74,15 @@ const DineInReservation = () => {
             </option>
           ))}
         </select>
-        <input type="email" placeholder="Email" value={email} onChange={handleEmailChange} />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={handleEmailChange}
+        />
         <button onClick={handleBookNow}>Book Now</button>
       </div>
+      <Footer />
     </div>
   );
 };

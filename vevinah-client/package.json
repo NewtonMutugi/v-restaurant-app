@@ -2,6 +2,10 @@
   "name": "vevinah",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=16.20.2",
+    "npm": ">=8.19.4"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
@@ -29,6 +33,7 @@
     "react-toastify": "^10.0.1",
     "redux": "^5.0.1",
     "sweetalert2": "^11.10.4",
+    "vercel": "^33.4.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

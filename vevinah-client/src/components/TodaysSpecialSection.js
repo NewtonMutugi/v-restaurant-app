@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from "react";
-import "../App.css";
-import { Link } from "react-router-dom";
-import Navbar from "./Navbar";
-import HomeFooter from "./HomeFooter";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from 'react';
+import '../App.css';
+import PropTypes from 'prop-types';
+
+const backend_url = 'https://veni-vay2.onrender.com/dishes';
 
 function TodaysSpecialSection() {
   const [menuItems, setMenuItems] = useState([]);
-  const savedCart = localStorage.getItem("cart");
+  const savedCart = localStorage.getItem('cart');
   const [originalMenuItems, setOriginalMenuItems] = useState([]);
   const [cart, setCart] = useState(savedCart ? JSON.parse(savedCart) : []);
   const [showNotification, setShowNotification] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [notificationMessage, setNotificationMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
 
   useEffect(() => {
     console.log(savedCart);
@@ -21,12 +20,12 @@ function TodaysSpecialSection() {
         const parsedCart = JSON.parse(savedCart);
         setCart(parsedCart);
       } catch (error) {
-        console.error("Error parsing savedCart:", error);
+        console.error('Error parsing savedCart:', error);
       }
     }
   }, []);
   const handleSearch = () => {
-    if (searchQuery.trim() === "") {
+    if (searchQuery.trim() === '') {
       setMenuItems(originalMenuItems);
       return;
     }
@@ -55,11 +54,11 @@ function TodaysSpecialSection() {
   };
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/dishes")
+    fetch(backend_url)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -70,7 +69,7 @@ function TodaysSpecialSection() {
         setOriginalMenuItems([...threeMenuItems]);
       })
       .catch((error) => {
-        console.error("Error fetching menu:", error);
+        console.error('Error fetching menu:', error);
       });
   }, []);
 
@@ -97,7 +96,7 @@ function TodaysSpecialSection() {
   };
 
   const handleNotificationClose = () => {
-    setNotificationMessage("");
+    setNotificationMessage('');
   };
 
   const handleInputChange = (e) => {
@@ -139,8 +138,8 @@ function TodaysSpecialSection() {
                 <img className="images" src={item.image} alt={item.name} />
               </a>
               <h3>{item.name}</h3>
-              <p style={{color:"black"}}>{item.description}</p>
-              <p style={{color:"black"}}>Kshs {item.price}</p>
+              <p style={{ color: 'black' }}>{item.description}</p>
+              <p style={{ color: 'black' }}>Kshs {item.price}</p>
             </div>
           ))}
         </div>

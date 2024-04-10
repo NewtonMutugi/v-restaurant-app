@@ -1,16 +1,18 @@
 // Menu.js
-import React, { useState, useEffect } from "react";
-import "../App.css";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
-import Carousel1 from "../assets/slide-image.jpg";
+import React, { useState, useEffect } from 'react';
+import '../App.css';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import Carousel1 from '../assets/slide-image.jpg';
+
+const backend_url = 'http://127.0.0.1:5000';
 
 function Menu() {
-  const savedCart = localStorage.getItem("cart");
+  const savedCart = localStorage.getItem('cart');
   const image = [Carousel1];
   const [menuItems, setMenuItems] = useState([]);
   const [originalMenuItems, setOriginalMenuItems] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState(savedCart ? JSON.parse(savedCart) : []);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -23,7 +25,7 @@ function Menu() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   const handleInputChange = (e) => {
@@ -31,7 +33,7 @@ function Menu() {
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim() === "") {
+    if (searchQuery.trim() === '') {
       setMenuItems(originalMenuItems);
       return;
     }
@@ -43,7 +45,7 @@ function Menu() {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/dishes")
+    fetch(`${backend_url}/dishes`) // Update the URL here
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -51,7 +53,7 @@ function Menu() {
         setOriginalMenuItems(data);
       })
       .catch((error) => {
-        console.error("Error fetching menu:", error);
+        console.error('Error fetching menu:', error);
       });
   }, []);
 
@@ -92,15 +94,18 @@ function Menu() {
     <div>
       <Navbar />
       <section className="menu-image">
-        <img src={image} alt="menu-image" />
+        <img src={image} alt="menu" />
         <h2 className="menu-title">Menu</h2>
       </section>
       <div className="home-container">
         {showNotification && (
           <div className="notification">Item added to cart!</div>
         )}
-        <div className="container" style={{backgroundColor: "#ff9d5723"}}>
-          <div className="cards-container" style={{display:"grid", gridTemplateColumns: "1fr 1fr 1fr 1fr"}}>
+        <div className="container">
+          <div
+            className="cards-container"
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}
+          >
             {menuItems.map((item) => (
               <div key={item.id}>
                 <img className="images" src={item.image} alt={item.name} />
@@ -123,4 +128,3 @@ function Menu() {
 }
 
 export default Menu;
-

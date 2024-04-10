@@ -3,14 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Carousel1 from '../assets/dineinphoto.jpg';
 
+const backend_url = 'http://127.0.0.1:5000';
 const Register = () => {
-  const [user, setUser] = useState({
-    first_name: '',
-    last_name: '',
-    password: '',
-    email: '',
-    phone: '',
-  });
+  const [user, setUser] = useState({});
 
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
@@ -26,8 +21,8 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    fetch('http://localhost:5000/signup', {
+    console.log(JSON.stringify(user));
+    fetch(`${backend_url}/signup`, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -52,45 +47,64 @@ const Register = () => {
 
   return (
     <div className="offset-lg-3 col-lg-6">
+      <img src={image} alt="menu" className="background-image" />
       <div className="card">
-        <img src={image} alt="menu-image" className="background-image" />
-        <div className="card-header">
-          <h1>Sign up</h1>
-        </div>
-        <div
-          style={{ marginTop: '20%', borderRadius: '0' }}
-          className="form-dialogue"
-        >
+        <div className="signup-form-dialogue">
+          <h1 className="card-header">Sign up</h1>
           <form className="container" onSubmit={handleSubmit}>
             <div className="row">
-              {['first_name', 'last_name', 'email', 'phone', 'password'].map(
+              {['First name', 'Last name', 'Email', 'Phone', 'Password'].map(
                 (field) => (
                   <div key={field} className="col-lg-6">
                     <div className="form-group">
                       <label>
-                        {/* {field.charAt(0).toUpperCase() + field.slice(1)}{' '} */}
                         {field}
                         <span className="errmsg">*</span>
                       </label>
                       <input
-                        type={field === 'password' ? 'password' : 'text'}
-                        value={user[field]}
+                        type={field === 'Password' ? 'password' : 'text'}
+                        value={
+                          user[
+                            field === 'First name'
+                              ? 'first_name'
+                              : field === 'Last name'
+                              ? 'last_name'
+                              : field === 'Email'
+                              ? 'email'
+                              : field === 'Phone'
+                              ? 'phone'
+                              : field === 'Password'
+                              ? 'password'
+                              : ''
+                          ]
+                        }
                         onChange={handleChange}
-                        name={field}
-                        className="form-control"
+                        name={
+                          field === 'First name'
+                            ? 'first_name'
+                            : field === 'Last name'
+                            ? 'last_name'
+                            : field === 'Email'
+                            ? 'email'
+                            : field === 'Phone'
+                            ? 'phone'
+                            : field === 'Password'
+                            ? 'password'
+                            : ''
+                        }
                       />
                     </div>
                   </div>
                 )
               )}
             </div>
-            <div className="form-diaolgue">
+            <div className="signup-footer">
               <button type="submit" className="continue-shopping">
                 {registrationSuccess ? 'Registered!' : 'Signup'}
-              </button>{' '}
-              <br />
-              <Link to="/sign_in" className="">
-                Already have an account? Sign in
+              </button>
+              or
+              <Link to="/sign_in">
+                <button className="continue-shopping">Login</button>
               </Link>
             </div>
           </form>

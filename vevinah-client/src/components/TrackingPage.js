@@ -3,8 +3,8 @@ import { Star } from 'react-feather';
 import '../App.css';
 import Navbar from './Navbar';
 import Footer from './Footer';
-// import { useLocation } from 'react-router-dom';
 const api_key = process.env.REACT_APP_MAPS_API_KEY;
+const backend_url = `https://veni-vay2.onrender.com/reviews`;
 
 function TrackingPage() {
   const defaultTime = 20;
@@ -30,12 +30,13 @@ function TrackingPage() {
   // Calculate estimated time using distance calculated from Google Maps API
   useEffect(() => {
     if (state && state.destination && state.origin) {
-      const url = `http://localhost:5000/distance?destinations=${state.destination.latitude},${state.destination.longitude}&origins=${state.origin.latitude},${state.origin.longitude}&key=${api_key}`;
-
+      const url = `https://127.0.0.1:5000/distance?destinations=${state.destination.latitude},${state.destination.longitude}&origins=${state.origin.latitude},${state.origin.longitude}&key=${api_key}`;
+      console.log('url;' + url);
       // send a GET request to the Distance Matrix API
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
+          console.log(data);
           const newEstimatedTime =
             defaultTime +
             Math.floor(data.rows[0].elements[0].duration.value / 60);
@@ -77,7 +78,7 @@ function TrackingPage() {
 
     // Make a POST request to the Flask API
     try {
-      const response = await fetch(`http://127.0.0.1:5000/reviews`, {
+      const response = await fetch(backend_url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,10 +129,7 @@ function TrackingPage() {
   return (
     <div>
       <Navbar />
-      <div
-        className="track-order-container"
-        style={{ backgroundColor: '#ff9d5723' }}
-      >
+      <div className="track-order-container">
         <div className="steps-container">
           {['Ordered', 'Preparing', 'In Transit', 'Arrived'].map(
             (step, index) => (
