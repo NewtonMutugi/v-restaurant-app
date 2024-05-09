@@ -9,13 +9,7 @@ const DineIn = () => {
   return (
     <div className="dine-in-section">
       <div className="video-card">
-        <iframe
-          title="Restaurant Video"
-          width="580"
-          height="315"
-          src="https://player.vimeo.com/external/173249177.sd.mp4?s=4b45afd27c8a45058186028705247db86c9b381b&profile_id=164&oauth2_token_id=57447761"
-          allowFullScreen
-        ></iframe>
+        <iframe width="580" height="315" src="https://www.youtube.com/embed/WdWEMXnHBVI" title="RESTAURANT &amp; BAR DESIGN: Follow the Follower" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
       </div>
       <div className="dine-in-description">
         <FontAwesomeIcon icon={faUtensils} className="utensils" />
